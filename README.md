@@ -1,12 +1,20 @@
 # zkEVM Counter
+- Walk through the instructions in this README (main branch) to build a Counter dapp and deploy to the Polgon zkEVM testnet.
+- Check out the completed code branch here: https://github.com/oceans404/fullstack-zkevm/tree/complete
 
 First things first...
 - add the Polygon zkEVM Testnet Network to your Metamask Networks: https://www.youtube.com/watch?v=Y1gOkTsXgSY
 - Get some zkEVM testnet ETH: https://www.youtube.com/watch?v=eYZAPkTCgwg
 
+Star this repo and clone it locally
+```shell
+git clone https://github.com/oceans404/fullstack-zkevm
+```
+
 Install dependencies and start react app
 
 ```shell
+cd fullstack-zkevm
 npm i
 npm start
 ```
