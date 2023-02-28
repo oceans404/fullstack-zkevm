@@ -1,11 +1,229 @@
 # zkEVM Counter
 
+First things first...
+- add the Polygon zkEVM Testnet Network to your Metamask Networks: https://www.youtube.com/watch?v=Y1gOkTsXgSY
+- Get some zkEVM testnet ETH: https://www.youtube.com/watch?v=eYZAPkTCgwg
+
 Install dependencies and start react app
 
-```
+```shell
 npm i
 npm start
 ```
+
+Install dependencies
+
+```shell
+npm install ethers hardhat @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers dotenv
+```
+
+```shell
+cp .env.sample .env;
+```
+
+Update .env to set your ACCOUNT_PRIVATE_KEY environment variable. [Here's an article](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key#:~:text=On%20the%20account%20page%2C%20click,click%20%E2%80%9CConfirm%E2%80%9D%20to%20proceed) on how to get your private key from MetaMask.
+
+Initialize a hardhat project WITHOUT A README!
+
+```shell
+npx hardhat
+```
+
+Open the hardhat.config.js and paste in this code
+
+```js
+require("dotenv").config();
+require("@nomicfoundation/hardhat-toolbox");
+
+/** @type import('hardhat/config').HardhatUserConfig */
+module.exports = {
+  solidity: "0.8.9",
+  networks: {
+    zkEVM: {
+      url: `https://rpc.public.zkevm-test.net`,
+      accounts: [process.env.ACCOUNT_PRIVATE_KEY],
+    },
+  },
+};
+```
+
+Create a new file in the contracts folder `Counter.sol`
+
+```shell
+touch contracts/Counter.sol
+```
+
+Copy paste in the Counter contract code
+
+```solidity
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
+
+contract Counter {
+  string greeting;
+
+  uint256 currentCount = 0;
+
+    function increment() public {
+        currentCount = currentCount + 1;
+    }
+
+    function retrieve() public view returns (uint256){
+        return currentCount;
+    }
+}
+```
+
+
+Create a new file in the scripts folder `deploy-counter.js` 
+
+
+```shell
+touch scripts/deploy-counter.js
+```
+
+and add the following code to the `deploy-counter.js`  file
+
+```js
+const hre = require("hardhat");
+
+async function main() {
+  const CounterContractFactory = await hre.ethers.getContractFactory("Counter");
+  const counterContract = await CounterContractFactory.deploy();
+
+  await counterContract.deployed();
+
+  console.log(
+    `Counter contract deployed to https://explorer.public.zkevm-test.net/address/${counterContract.address}`
+  );
+}
+
+Compile your contract code
+
+```shell
+npx hardhat compile
+```
+
+```shell
+npx hardhat run scripts/deploy-counter.js --network zkEVM
+```
+
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+```
+
+Verify the contract by following [my verification instructions](https://explorer.public.zkevm-test.net/address/0xF6C5DDd37F0203100030E79EEF6397D37767Be1E)
+
+
+
+## Update the Frontend to turn it into a dapp
+
+Copy the Counter.json file into your src folder
+```shell
+cp ./artifacts/contracts/Counter.sol/Counter.json ./src/Counter.json;
+```
+
+In App.js, import the ethers, the Counter file and log the contract's abi. Update the counterAddress to your deployed address.
+```js
+import Counter from "./Counter.json";
+const counterAddress = "your-contract-address"
+console.log(counterAddress, "Counter ABI: ", Counter.abi);
+```
+
+Update frontend counter to read from blockchain
+
+```js
+    useEffect(() => {
+    // declare the data fetching function
+    const fetchCount = async () => {
+      const data = await readCounterValue();
+      return data;
+    };
+
+    fetchCount().catch(console.error);
+  }, []);
+
+  async function readCounterValue() {
+    if (typeof window.ethereum !== "undefined") {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      console.log("provider", provider);
+      const contract = new ethers.Contract(
+        counterAddress,
+        Counter.abi,
+        provider
+      );
+      console.log("contract", contract);
+      try {
+        const data = await contract.retrieve();
+        console.log(data);
+        console.log("data: ", parseInt(data.toString()));
+        setCount(parseInt(data.toString()));
+      } catch (err) {
+        console.log("Error: ", err);
+        alert(
+          "Switch your MetaMask network to Polygon zkEVM testnet and refresh this page!"
+        );
+      }
+    }
+  }
+```
+
+Let's track a loader. Add this to your state
+
+```js
+const [isLoading, setIsLoading] = useState(false);
+```
+
+Let frontend counter write to the blockchain by adding the following 2 functions.
+
+```js
+async function requestAccount() {
+  await window.ethereum.request({ method: "eth_requestAccounts" });
+}
+
+async function updateCounter() {
+  if (typeof window.ethereum !== "undefined") {
+    await requestAccount();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    console.log({ provider });
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(counterAddress, Counter.abi, signer);
+    const transaction = await contract.increment();
+    setIsLoading(true);
+    await transaction.wait();
+    setIsLoading(false);
+    readCounterValue();
+  }
+}
+```
+
+Update the incrementCounter function to
+
+```js
+const incrementCounter = async () => {
+  await updateCounter();
+};
+```
+
+Update the increment button code to
+
+```js
+<Button
+  onClick={incrementCounter}
+  variant="outlined"
+  disabled={isLoading}
+>
+  {isLoading ? "loading..." : "+1"}
+</Button>
+```
+
+
+
+
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
