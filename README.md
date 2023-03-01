@@ -1,8 +1,10 @@
-# zkEVM Counter
+# Create a Fullstack Counter Dapp on the Polygon zkEVM Testnet
+
 - Walk through the instructions in this README (main branch) to build a Counter dapp and deploy to the Polgon zkEVM testnet.
 - Check out the completed code branch here: https://github.com/oceans404/fullstack-zkevm/tree/complete
 
-First things first...
+## General Setup
+
 - add the Polygon zkEVM Testnet Network to your Metamask Networks: https://www.youtube.com/watch?v=Y1gOkTsXgSY
 - Get some zkEVM testnet ETH: https://www.youtube.com/watch?v=eYZAPkTCgwg
 
@@ -30,6 +32,9 @@ cp .env.sample .env;
 ```
 
 Update .env to set your ACCOUNT_PRIVATE_KEY environment variable. [Here's an article](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key#:~:text=On%20the%20account%20page%2C%20click,click%20%E2%80%9CConfirm%E2%80%9D%20to%20proceed) on how to get your private key from MetaMask.
+
+
+## Hardhat Smart Contract
 
 Before running npx hardhat, rename your README.md file temporarily. (README.md -> README-tutorial.md) Hardhat can't initialize a sample project if there's an existing README file.
 
@@ -135,13 +140,6 @@ npx hardhat compile
 npx hardhat run scripts/deploy-counter.js --network zkEVM
 ```
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
-```
 
 Verify the contract by following [my verification instructions](https://explorer.public.zkevm-test.net/address/0xF6C5DDd37F0203100030E79EEF6397D37767Be1E)
 
