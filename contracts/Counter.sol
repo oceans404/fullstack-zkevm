@@ -2,7 +2,6 @@
 pragma solidity ^0.8.9;
 
 contract Counter {
-  string greeting;
 
   uint256 currentCount = 0;
 
