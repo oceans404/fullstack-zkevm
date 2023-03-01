@@ -31,13 +31,19 @@ cp .env.sample .env;
 
 Update .env to set your ACCOUNT_PRIVATE_KEY environment variable. [Here's an article](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key#:~:text=On%20the%20account%20page%2C%20click,click%20%E2%80%9CConfirm%E2%80%9D%20to%20proceed) on how to get your private key from MetaMask.
 
-Initialize a hardhat project WITHOUT A README!
+Before running npx hardhat, rename your README.md file temporarily. (README.md -> README-tutorial.md) Hardhat can't initialize a sample project if there's an existing README file.
 
 ```shell
 npx hardhat
 ```
+What do you want to do? … 
+❯ Create a JavaScript project
 
-Open the hardhat.config.js and paste in this code
+Hardhat project root: default
+
+Do you want to add a .gitignore? y
+
+Open the hardhat.config.js and paste in this code:
 
 ```js
 require("dotenv").config();
@@ -46,6 +52,9 @@ require("@nomicfoundation/hardhat-toolbox");
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: "0.8.9",
+  paths: {
+    artifacts: "./src",
+  },
   networks: {
     zkEVM: {
       url: `https://rpc.public.zkevm-test.net`,
@@ -54,6 +63,8 @@ module.exports = {
   },
 };
 ```
+
+Notice that we've added a different path to artifacts so that the React app will be able to read the contract ABI within the src folder
 
 Create a new file in the contracts folder `Counter.sol`
 
@@ -106,6 +117,14 @@ async function main() {
   );
 }
 
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+
+
+```
+
 Compile your contract code
 
 ```shell
@@ -127,17 +146,11 @@ main().catch((error) => {
 Verify the contract by following [my verification instructions](https://explorer.public.zkevm-test.net/address/0xF6C5DDd37F0203100030E79EEF6397D37767Be1E)
 
 
-
 ## Update the Frontend to turn it into a dapp
-
-Copy the Counter.json file into your src folder
-```shell
-cp ./artifacts/contracts/Counter.sol/Counter.json ./src/Counter.json;
-```
 
 In App.js, import the ethers, the Counter file and log the contract's abi. Update the counterAddress to your deployed address.
 ```js
-import Counter from "./Counter.json";
+import Counter from "./contracts/Counter.json";
 const counterAddress = "your-contract-address"
 console.log(counterAddress, "Counter ABI: ", Counter.abi);
 ```
@@ -145,7 +158,7 @@ console.log(counterAddress, "Counter ABI: ", Counter.abi);
 Update frontend counter to read from blockchain
 
 ```js
-    useEffect(() => {
+useEffect(() => {
     // declare the data fetching function
     const fetchCount = async () => {
       const data = await readCounterValue();
@@ -153,7 +166,7 @@ Update frontend counter to read from blockchain
     };
 
     fetchCount().catch(console.error);
-  }, []);
+}, []);
 
   async function readCounterValue() {
     if (typeof window.ethereum !== "undefined") {
@@ -229,76 +242,4 @@ Update the increment button code to
 </Button>
 ```
 
-
-
-
-
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-#### Available Scripts
-
-In the project directory, you can run:
-
-##### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-##### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-##### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-##### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-#### Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-##### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-##### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-##### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-##### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-##### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-##### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+You did it! 🚀 Want to deploy your dapp to Fleek for decentralized hosting? [Follow my instructions here](https://github.com/oceans404/fullstack-sockets-demo#deploy-your-frontend)
