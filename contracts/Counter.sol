@@ -8,7 +8,7 @@ contract Counter {
   function increment() public {
       currentCount = currentCount + 1;
   }
-
+  
   function retrieve() public view returns (uint256){
       return currentCount;
   }
