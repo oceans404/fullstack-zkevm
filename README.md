@@ -141,7 +141,7 @@ npx hardhat run scripts/deploy-counter.js --network zkEVM
 ```
 
 
-Verify the contract by following [my verification instructions](https://explorer.public.zkevm-test.net/address/0xF6C5DDd37F0203100030E79EEF6397D37767Be1E)
+Verify the contract by following [my verification instructions](https://github.com/oceans404/zkevm-hardhat-demo#verify-your-polygon-zkevm-testnet-contract)
 
 
 ## Update the Frontend to turn it into a dapp
