@@ -148,7 +148,8 @@ Verify the contract by following [my verification instructions](https://github.c
 
 In App.js, import the ethers, the Counter file and log the contract's abi. Update the counterAddress to your deployed address.
 ```js
-import Counter from "./contracts/Counter.json";
+import { ethers } from "ethers";
+import Counter from "./contracts/Counter.sol/Counter.json";
 const counterAddress = "your-contract-address"
 console.log(counterAddress, "Counter ABI: ", Counter.abi);
 ```
