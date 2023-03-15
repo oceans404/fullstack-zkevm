@@ -84,8 +84,6 @@ Copy paste in the Counter contract code
 pragma solidity ^0.8.9;
 
 contract Counter {
-  string greeting;
-
   uint256 currentCount = 0;
 
     function increment() public {
