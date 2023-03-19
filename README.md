@@ -24,7 +24,7 @@ npm start
 Install dependencies
 
 ```shell
-npm install ethers hardhat @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers dotenv
+npm install ethers hardhat @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers dotenv @nomicfoundation/hardhat-toolbox
 ```
 
 ```shell
